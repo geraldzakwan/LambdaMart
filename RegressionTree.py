@@ -2,8 +2,8 @@
 # input is a dataframe of features
 # the corresponding y value(called labels here) is the scores for each document
 
-import pandas as pd 
-import numpy as np 
+import pandas as pd
+import numpy as np
 from multiprocessing import Pool
 from itertools import repeat
 import scipy
@@ -41,7 +41,7 @@ def find_best_split_parallel(args):
 			best_children = children
 	return best_ls, best_split, best_children
 
-def find_best_split(data, label, split_points): 
+def find_best_split(data, label, split_points):
 	# split_points is a dictionary of possible splitting values
 	# return the best split
 	best_ls = 1000000
@@ -55,7 +55,7 @@ def find_best_split(data, label, split_points):
 			best_children = children
 	pool.close()
 
-			
+
 
 
 	return best_split, best_children # return a tuple(attribute, value)
@@ -67,8 +67,8 @@ def split_children(data, label, key, split):
 	right_data = data.iloc[right_index,:]
 	left_label = [label[i] for i in left_index]
 	right_label =[label[i] for i in right_index]
-	
-	return left_data, left_label, right_data, right_label 
+
+	return left_data, left_label, right_data, right_label
 
 def least_square(label):
 	if not len(label):
@@ -91,7 +91,7 @@ def find_splits_parallel(args):
 	var_space, label, col = args
 	# var_space = data.iloc[:,col].tolist()
 	return scipy.optimize.fminbound(error_function, min(var_space), max(var_space), args = (col, var_space, label), full_output = 1)
-	# return, 
+	# return,
 	# if not min_error or error < min_error:
 	# 	min_error = error
 	# 	split_var = col
@@ -102,12 +102,12 @@ def create_tree(data, all_pos_split, label, max_depth, ideal_ls, current_depth =
 	#stopping conditions
 	if sum([len(v)!= 0 for v in remaining_features.values()]) == 0:
 		# If there are no remaining features to consider, make current node a leaf node
-		return create_leaf(label)    
+		return create_leaf(label)
 	# #Additional stopping condition (limit tree depth)
 	elif current_depth > max_depth:
 		return create_leaf(label)
 
-	
+
 	#######
 	min_error = None
 	split_var = None
@@ -141,10 +141,10 @@ def create_tree(data, all_pos_split, label, max_depth, ideal_ls, current_depth =
 	# recurse on children
 	left_tree = create_tree(left_data, remaining_features, left_label, max_depth, ideal_ls, current_depth +1)
 	right_tree = create_tree(right_data, remaining_features, right_label, max_depth, ideal_ls, current_depth +1)
-	return {'is_leaf'          : False, 
+	return {'is_leaf'          : False,
 			'value'       : None,
 			'splitting_feature': splitting_feature,
-			'left'             : left_tree, 
+			'left'             : left_tree,
 			'right'            : right_tree,
 			'index'			   : None}
 
@@ -162,18 +162,18 @@ def error_function(split_point, split_var, data, label):
 
 def make_prediction(tree, x, annotate = False):
 	if tree['is_leaf']:
-		if annotate: 
-			print "At leaf, predicting %s" % tree['value']
-		return tree['value'] 
+		if annotate:
+			print("At leaf, predicting {}".format(tree['value']))
+		return tree['value']
 	else:
 		# the splitting value of x.
 		split_feature_value = x[tree['splitting_feature'][0]]
-		if annotate: 
-			print "Split on %s = %s" % (tree['splitting_feature'], split_feature_value)
+		if annotate:
+			print("Split on {} = {}".format(tree['splitting_feature'], split_feature_value))
 		if split_feature_value < tree['splitting_feature'][1]:
 			return make_prediction(tree['left'], x, annotate)
 		else:
-			return make_prediction(tree['right'], x, annotate)	
+			return make_prediction(tree['right'], x, annotate)
 
 class RegressionTree:
 	def __init__(self, training_data, labels, max_depth=5, ideal_ls=100):
@@ -209,5 +209,4 @@ if __name__ == '__main__':
 
 	model = RegressionTree(data, label)
 	model.fit()
-	print model.predict(test)
-
+	print(model.predict(test))

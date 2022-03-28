@@ -32,7 +32,7 @@ def group_queries(data):
 def main():
 	total_ndcg = 0.0
 	for i in [1,2,3,4,5]:
-		print 'start Fold ' + str(i)
+		print("Start Fold {}".format(str(i)))
 		training_data = get_data('Fold%d/train.txt' % (i))
 		test_data = get_data('Fold%d/test.txt' % (i))
 		model = LambdaMART(training_data, 300, 0.001, 'sklearn')
@@ -41,14 +41,14 @@ def main():
 		# model = LambdaMART()
 		# model.load('lambdamart_model.lmart')
 		average_ndcg, predicted_scores = model.validate(test_data, 10)
-		print average_ndcg
+		print(average_ndcg)
 		total_ndcg += average_ndcg
 	total_ndcg /= 5.0
-	print 'Original average ndcg at 10 is: ' + str(total_ndcg)
+	print("Original average ndcg at 10 is: ".format(total_ndcg))
 
 	total_ndcg = 0.0
 	for i in [1,2,3,4,5]:
-		print 'start Fold ' + str(i)
+		print("Start Fold {}".format(str(i)))
 		training_data = get_data('Fold%d/train.txt' % (i))
 		test_data = get_data('Fold%d/test.txt' % (i))
 		model = LambdaMART(training_data, 300, 0.001, 'original')
@@ -57,12 +57,12 @@ def main():
 		# model = LambdaMART()
 		# model.load('lambdamart_model.lmart')
 		average_ndcg, predicted_scores = model.validate(test_data, 10)
-		print average_ndcg
+		print(average_ndcg)
 		total_ndcg += average_ndcg
 	total_ndcg /= 5.0
-	print 'Sklearn average ndcg at 10 is: ' + str(total_ndcg)
+	print("Sklearn average ndcg at 10 is: ".format(total_ndcg))
 
-	# print 'NDCG score: %f' % (average_ndcg)
+	# print("NDCG score: {}".format(average_ndcg))
 	# query_indexes = group_queries(test_data)
 	# index = query_indexes.keys()[0]
 	# testdata = [test_data[i][0] for i in query_indexes[index]]
@@ -70,9 +70,9 @@ def main():
 	# output = pd.DataFrame({"True label": testdata, "prediction": pred})
 	# output = output.sort('prediction',ascending = False)
 	# output.to_csv("outdemo.csv", index =False)
-	# print output
+	# print(output)
 	# # for i in query_indexes[index]:
-	# # 	print test_data[i][0], predicted_scores[i]
+	# # 	print(test_data[i][0], predicted_scores[i])
 
 
 if __name__ == '__main__':

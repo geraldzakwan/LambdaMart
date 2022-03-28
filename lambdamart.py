@@ -15,7 +15,7 @@ def dcg(scores):
 		----------
 		scores : list
 			Contains labels in a certain ranked order
-		
+
 		Returns
 		-------
 		DCG_val: int
@@ -35,7 +35,7 @@ def dcg_k(scores, k):
 			Contains labels in a certain ranked order
 		k : int
 			In the amount of values you want to only look at for computing DCG
-		
+
 		Returns
 		-------
 		DCG_val: int
@@ -53,7 +53,7 @@ def ideal_dcg(scores):
 		----------
 		scores : list
 			Contains labels in a certain ranked order
-		
+
 		Returns
 		-------
 		Ideal_DCG_val: int
@@ -71,7 +71,7 @@ def ideal_dcg_k(scores, k):
 			Contains labels in a certain ranked order
 		k : int
 			In the amount of values you want to only look at for computing DCG
-		
+
 		Returns
 		-------
 		Ideal_DCG_val: int
@@ -91,7 +91,7 @@ def single_dcg(scores, i, j):
 			This points to the ith value in scores
 		j : int
 			This sets the ith value in scores to be the jth rank
-		
+
 		Returns
 		-------
 		Single_DCG: int
@@ -107,7 +107,7 @@ def compute_lambda(args):
 		args : zipped value of true_scores, predicted_scores, good_ij_pairs, idcg, query_key
 			Contains a list of the true labels of documents, list of the predicted labels of documents,
 			i and j pairs where true_score[i] > true_score[j], idcg values, and query keys.
-		
+
 		Returns
 		-------
 		lambdas : numpy array
@@ -161,7 +161,7 @@ def group_queries(training_data, qid_index):
 			Contains a list of document information. Each document's format is [relevance score, query index, feature vector]
 		qid_index : int
 			This is the index where the qid is located in the training data
-		
+
 		Returns
 		-------
 		query_indexes : dictionary
@@ -182,7 +182,7 @@ def get_pairs(scores):
 		----------
 		scores : list of int
 			Contain a list of numbers
-		
+
 		Returns
 		-------
 		query_pair : list of pairs
@@ -214,7 +214,7 @@ class LambdaMART:
 		learning_rate : float (default: 0.1)
 			Rate at which we update our prediction with each tree
 		tree_type : string (default: "sklearn")
-			Either "sklearn" for using Sklearn implementation of the tree of "original" 
+			Either "sklearn" for using Sklearn implementation of the tree of "original"
 			for using our implementation
 		"""
 
@@ -243,11 +243,11 @@ class LambdaMART:
 		idcg = [ideal_dcg(scores) for scores in true_scores]
 
 		for k in xrange(self.number_of_trees):
-			print 'Tree %d' % (k)
+			print("Tree {}".format(k))
 			lambdas = np.zeros(len(predicted_scores))
 			w = np.zeros(len(predicted_scores))
 			pred_scores = [predicted_scores[query_indexes[query]] for query in query_keys]
-			
+
 			pool = Pool()
 			for lambda_val, w_val, query_key in pool.map(compute_lambda, zip(true_scores, pred_scores, good_ij_pairs, idcg, query_keys), chunksize=1):
 				indexes = query_indexes[query_key]
@@ -256,7 +256,7 @@ class LambdaMART:
 			pool.close()
 
 			if self.tree_type == 'sklearn':
-				# Sklearn implementation of the tree			
+				# Sklearn implementation of the tree
 				tree = DecisionTreeRegressor(max_depth=50)
 				tree.fit(self.training_data[:,2:], lambdas)
 				self.trees.append(tree)
@@ -276,7 +276,7 @@ class LambdaMART:
 		----------
 		data : Numpy array of documents
 			Numpy array of documents with each document's format is [query index, feature vector]
-		
+
 		Returns
 		-------
 		predicted_scores : Numpy array of scores
@@ -301,7 +301,7 @@ class LambdaMART:
 			Numpy array of documents with each document's format is [relevance score, query index, feature vector]
 		k : int
 			this is used to compute the NDCG@k
-		
+
 		Returns
 		-------
 		average_ndcg : float
@@ -335,7 +335,7 @@ class LambdaMART:
 		----------
 		fname : string
 			Filename of the file you want to save
-		
+
 		"""
 		pickle.dump(self, open('%s.lmart' % (fname), "wb"), protocol=2)
 
@@ -346,7 +346,7 @@ class LambdaMART:
 		----------
 		fname : string
 			Filename of the file you want to load
-		
+
 		"""
 		model = pickle.load(open(fname , "rb"))
 		self.training_data = model.training_data
